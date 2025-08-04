@@ -293,7 +293,7 @@ def main(args):
 
     if args.launcher == "none":
         args.distributed = False
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else sys.exit("❌ CUDA is not available - aborting NICER-SLAM preprocessing.\n"))
     else:
         args.distributed = True
 

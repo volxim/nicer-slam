@@ -49,7 +49,8 @@ def read_colmap_pose(basedir):
     return poses, intrinsics
 
 
-scenes = ["1", "2", "3", "4", "5", "6"]
+# scenes = ["1", "2", "3", "4", "5", "6"]
+scenes = ["1"]
 ids = range(1, 7)
 
 resize = 1  # each image is resized to H//resize, W//resize
@@ -126,14 +127,19 @@ for id, scene in zip(ids, scenes):
 
     # extract monocular cues
     python_executable_path = sys.executable
-    python_path = python_executable_path.replace("nicer-slam", "omnidata")
+    # python_path = python_executable_path.replace("nicer-slam", "omnidata")
+    python_path = python_executable_path
+
+    print("Extracting monocular cues ...")
     os.system(
         f"{python_path} preprocess/extract_monocular_cues.py --task depth --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}"
     )
+    print("Extracting normal cues ...")
     os.system(
         f"{python_path} preprocess/extract_monocular_cues.py --task normal --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}"
     )
     # extract flow
+    print("Extracting flow cues ...")
     python_path = python_executable_path.replace("nicer-slam", "gmflow")
     os.system(
         f"{python_path} preprocess/extract_flows.py --inference_dir {out_path} --output_path {out_path}_pair --gmflow_path {args.gmflow_path} --fwd_bwd_consistency_check --pred_bidir_flow --resume {args.gmflow_path}/pretrained/gmflow_sintel-0c07dcb3.pth"

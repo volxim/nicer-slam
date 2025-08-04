@@ -24,9 +24,11 @@ parser.set_defaults(dataset_folder="Datasets/orig/Replica")
 
 args = parser.parse_args()
 
-scenes = ["room0", "room1", "room2", "office0", "office1", "office2", "office3", "office4"]
+# scenes = ["room0", "room1", "room2", "office0", "office1", "office2", "office3", "office4"]
+scenes = ["room0"]
 ids = range(1, 9)
 for id, scene in zip(ids, scenes):
+    print(f"Processing scene {scene} with id {id}")
     out_path = f"Datasets/processed/Replica/scan{id}"
     os.makedirs(out_path, exist_ok=True)
 
@@ -93,10 +95,16 @@ for id, scene in zip(ids, scenes):
     np.savez(os.path.join(out_path, "cameras.npz"), **cameras)
 
     # extract monocular cues
+    print(f"Extracting monocular cues for scene {scene} with id {id}")
     python_executable_path = sys.executable
-    python_path = python_executable_path.replace('nicer-slam', 'omnidata')
-    os.system(f"{python_path} preprocess/extract_monocular_cues.py --task depth --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}")
-    os.system(f"{python_path} preprocess/extract_monocular_cues.py --task normal --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}")
+    # python_path = python_executable_path.replace('nicer-slam', 'omnidata')
+    python_path = python_executable_path
+    print(f"Using python_path executable: {python_path}")
+    print(f"Extracting depth for scene {scene} with id {id}")
+    # os.system(f"{python_path} preprocess/extract_monocular_cues.py --task depth --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}")
+    print(f"Extracting normal for scene {scene} with id {id}")
+    # os.system(f"{python_path} preprocess/extract_monocular_cues.py --task normal --img_path {out_path} --output_path {out_path} --omnidata_path {args.omnidata_path} --pretrained_models {args.pretrained_models}")
     # extract flow
-    python_path = python_executable_path.replace('nicer-slam', 'gmflow')
+    print(f"Extracting optical flow for scene {scene} with id {id}")
+    # python_path = python_executable_path.replace('nicer-slam', 'gmflow')
     os.system(f"{python_path} preprocess/extract_flows.py --inference_dir {out_path} --output_path {out_path}_pair --gmflow_path {args.gmflow_path} --fwd_bwd_consistency_check --pred_bidir_flow --resume {args.gmflow_path}/pretrained/gmflow_sintel-0c07dcb3.pth")

@@ -48,9 +48,14 @@ from data.transforms import get_transform
 
 trans_topil = transforms.ToPILImage()
 os.system(f"mkdir -p {args.output_path}")
-map_location = (lambda storage, loc: storage.cuda()) if torch.cuda.is_available() else torch.device("cpu")
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+print("CUDA Check\n")
+if not torch.cuda.is_available():
+    sys.exit("❌ CUDA is not available - aborting NICER-SLAM preprocessing.\n")
+
+device = torch.device("cuda:0")
+print(f"Using device: {device}\n")
+map_location = (lambda storage, loc: storage.cuda()) if torch.cuda.is_available() else sys.exit("❌ CUDA is not available - aborting NICER-SLAM preprocessing.\n")
 
 if args.task == "normal":
     image_size = 384
@@ -69,7 +74,7 @@ if args.task == "normal":
 
     pretrained_weights_path = root_dir + "omnidata_dpt_normal_v2.ckpt"
     model = DPTDepthModel(backbone="vitb_rn50_384", num_channels=3)  # DPT Hybrid
-    checkpoint = torch.load(pretrained_weights_path, map_location=map_location)
+    checkpoint = torch.load(pretrained_weights_path, map_location=map_location, weights_only=False)
     if "state_dict" in checkpoint:
         state_dict = {}
         for k, v in checkpoint["state_dict"].items():
@@ -93,7 +98,7 @@ elif args.task == "depth":
     pretrained_weights_path = root_dir + "omnidata_dpt_depth_v2.ckpt"  # 'omnidata_dpt_depth_v1.ckpt'
     # model = DPTDepthModel(backbone='vitl16_384') # DPT Large
     model = DPTDepthModel(backbone="vitb_rn50_384")  # DPT Hybrid
-    checkpoint = torch.load(pretrained_weights_path, map_location=map_location)
+    checkpoint = torch.load(pretrained_weights_path, map_location=map_location, weights_only=False)
     if "state_dict" in checkpoint:
         state_dict = {}
         for k, v in checkpoint["state_dict"].items():
