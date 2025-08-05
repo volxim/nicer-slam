@@ -41,7 +41,10 @@ class SLAMDataset(torch.utils.data.Dataset):
 
         self.instance_dir = os.path.join(data_dir, "scan{0}".format(scan_id))
         if not os.path.exists(self.instance_dir):
-            raise FileNotFoundError(f"Data directory is empty !!!!!!")
+            # raise FileNotFoundError(f"Data directory is empty !!!!!!")
+            raise FileNotFoundError(
+                f"Data directory {self.instance_dir} is empty. Please run the preprocessing script first."
+            )
 
         # load intrinsics and poses
         self.cam_file = "{0}/cameras.npz".format(self.instance_dir)

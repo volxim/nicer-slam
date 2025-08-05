@@ -8,6 +8,8 @@ Path('./tmp_build/').mkdir(parents=True, exist_ok=True)
 
 _src_path = os.path.dirname(os.path.abspath(__file__))
 device=torch.cuda.get_device_name()
+print('device', device)
+
 if 'V100' in device:
     device='V100'
 elif 'Quadro' in device:
@@ -24,6 +26,8 @@ elif '3090' in device:
     device='3090'
 elif '1080' in device:
     device='1080'
+elif 'A2000' in device:
+    device='A2000'
 build_directory=f'./tmp_build_{device}/'
 print('build_directory', build_directory)
 os.makedirs(build_directory, exist_ok=True)
